@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="initial-scale=1.0, width=device-width">
+<title>모임 정보 관리</title>
+
+<!-- 제이쿼리 모바일, 제이쿼리 라이브러리 파일 -->
+<link rel="stylesheet" href="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.css" />
+<script src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
+<script src="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.js"></script>
+
+<!-- 사용자 정의 자바스크립트 파일 -->
+<script src="dbHandle.js"></script>
+<script>
+	$(document).ready( function() {
+		// DB 연결
+		openDB();
+		createTable();
+		// 이벤트 함수 정의
+	 	$('#submit1').click( function() {
+	 		insertPerson();
+		});
+		$('#cancel1').click( function() {
+			$('#teamType1').val('미정').attr('selected', 'selected');
+			$('#teamType1').selectmenu('refresh');
+		});
+		$('#search2').click( function() {
+		  var name = $('#sPersonName2').val();
+		  selectPerson2(name);
+		});
+		$('#submit2').click( function() {
+		  updatePerson();
+		});
+		$('#cancel2').click( function() {
+			$('#teamType2').val('미정').attr('selected', 'selected');
+			$('#teamType2').selectmenu('refresh');
+		});
+		$('#search3').click( function() {
+		  var name = $('#sPersonName3').val();
+		  selectPerson3(name);
+		});
+		$('#submit3').click( function() {
+		  deletePerson();
+		});
+		$('#search4').click( function() {
+		  var name = $('#sPersonName4').val();
+		  selectPerson4(name);
+		});
+
+		$('#first').click( function() {
+		  position='first';
+		  listPerson();
+		});
+		$('#prev').click( function() {
+		  position='prev';
+		  listPerson();
+		});
+		$('#next').click( function() {
+		  position='next';
+		  listPerson();
+		});
+		$('#last').click( function() {
+		  position='last';
+		  	listPerson();
+		});
+	});
+</script>
+<style type="text/css">
+  img { padding:10px; margin:10px 50px; }
+  .gap { padding-top : 15px; padding-bottom: 30px; }
+	img { display: block; margin: 0px auto; }
+</style>
+</head>
+
+
+<body>
+<!-- 시작 화면 -->
+  <div data-role="page" id="page0">
+	<div data-role="header" data-position="fixed">
+		<h1>모임 정보 관리</h1>
+		<a href="#page0" data-icon="home" data-iconpos="notext" class="ui-btn-right">Home</a>
+	</div>
+	<div data-role="content">
+		<img src="img/MOIM.png" alt="">
+		<ul data-role="listview" data-inset="true" data-theme='e'>
+			<li><a href="#page1">모임 인원 정보 추가</a></li>
+			<li><a href="#page2">모임 인원 정보 갱신</a></li>
+			<li><a href="#page3">모임 인원 정보 삭제</a></li>
+			<li><a href="#page4">전체 모임 인원 정보 조회</a></li>
+		</ul>
+	</div>
+	<div data-role="footer" data-position="fixed" data-theme='b'>
+		<h4>HYCU 정보통신 프로젝트</h4>
+    </div>
+  </div>
+
+ <!-- 모임 인원 정보 추가 화면 -->
+  <div data-role="page" id="page1">
+	<div data-role="header" data-position="fixed">
+		<a href="#" data-icon="back" data-rel="back" data-direction="reverse">Back</a>
+		<h1>모임 인원 정보</h1>
+		<a href="#page0" data-icon="home" data-iconpos="notext">Home</a>
+		<div data-role="navbar">
+			<ul>
+				<li><a href="#page1">입력</a></li>
+				<li><a href="#page2">수정</a></li>
+				<li><a href="#page3">삭제</a></li>
+				<li><a href="#page4">전체검색</a></li>
+			</ul>
+		</div>
+	</div>
+	<div data-role="content">
+		<form name="form1">
+			<h3>모임 인원 정보 추가</h3>
+			<div class="ui-body ui-body-b gap">
+				<label for="teamType1" class="select">팀명:</label>
+				<select name="teamType1" id="teamType1" data-native-menu="false" data-mini="true" data-inline="true">
+					<option vlaue="Team1">Team1</option>
+					<option value="Team2">Team2</option>
+					<option value="Team3">Team3</option>
+					<option value="Team4">Team4</option>
+					<option value="Team5">Team5</option>
+				</select>
+				<label for="personName1">성명:</label>
+				<input type="text" name="personName1" id="personName1" value="" data-mini="true"/>
+            </div>
+			<div class="ui-body">
+				<fieldset class="ui-grid-a">
+					<div class="ui-block-a">
+	              	<input type="reset" id="cancel1" value="취소"/>
+					</div>
+					<div class="ui-block-b">
+	              	<input type="button" id="submit1" value="추가"/>
+					</div>
+				</fieldset>
+			</div>
+		</form>
+	</div>
+	<div data-role="footer" data-position="fixed" data-theme='b'>
+		<h4>HYCU 정보통신 프로젝트</h4>
+    </div>
+  </div>
+
+ <!-- 모임 인원 정보 갱신 화면 -->
+  <div data-role="page" id="page2">
+	<div data-role="header" data-position="fixed">
+		<a href="#" data-icon="back" data-rel="back" data-direction="reverse">Back</a>
+		<h1>모임 인원 정보</h1>
+		<a href="#page0" data-icon="home" data-iconpos="notext">Home</a>
+		<div data-role="navbar">
+			<ul>
+				<li><a href="#page1">입력</a></li>
+				<li><a href="#page2">수정</a></li>
+				<li><a href="#page3">삭제</a></li>
+				<li><a href="#page4">전체검색</a></li>
+			</ul>
+		</div>
+	</div>
+	<div data-role="content">
+		<form name="form2">
+			<h3>모임 인원 정보 수정</h3>
+			<div class="ui-body ui-body-b gap">
+				<label for="sPersonName2">인원 검색:</label>
+				<input type="search" name="sPersonName2" id="sPersonName2" value="" data-mini="true"/>
+				<label for="teamType2" class="select">팀명:</label>
+				<select name="teamType2" id="teamType2" data-native-menu="false" data-mini="true" data-inline="true">
+					<option vlaue="Team1">Team1</option>
+					<option value="Team2">Team2</option>
+					<option value="Team3">Team3</option>
+					<option value="Team4">Team4</option>
+					<option value="Team5">Team5</option>
+				</select>
+				 <label for="personName2">성명:</label>
+				 <input type="text" name="personName2" id="personName2" value="" data-mini="true"  />
+            </div>
+			<div class="ui-body">
+				<fieldset class="ui-grid-b">
+					<div class="ui-block-a">
+    	                <input type="reset" id="cancel2" value="취소"/>
+					</div>
+					<div class="ui-block-b">
+		                <input type="button" id="submit2" value="수정"/>
+					</div>
+					<div class="ui-block-c">
+		                <input type="button" id="search2" value="검색"/>
+					</div>
+				</fieldset>
+			</div>
+		</form>
+	</div>
+	<div data-role="footer" data-position="fixed" data-theme='b'>
+		<h4>HYCU 정보통신 프로젝트</h4>
+    </div>
+  </div>
+
+<!-- 모임 인원 정보 삭제 화면 -->
+  <div data-role="page" id="page3">
+	<div data-role="header" data-position="fixed">
+		<a href="#" data-icon="back" data-rel="back" data-direction="reverse">Back</a>
+		<h1>모임 인원 정보</h1>
+		<a href="#page0" data-icon="home" data-iconpos="notext">Home</a>
+		<div data-role="navbar">
+			<ul>
+				<li><a href="#page1">입력</a></li>
+				<li><a href="#page2">수정</a></li>
+				<li><a href="#page3">삭제</a></li>
+				<li><a href="#page4">전체검색</a></li>
+			</ul>
+		</div>
+	</div>
+	<div data-role="content">
+		<form name="form3">
+			<h3>모임 인원 정보 삭제</h3>
+			<div class="ui-body ui-body-b gap">
+				<label for="sPersonName3">인원 검색:</label>
+				<input type="search" name="sPersonName3" id="sPersonName3" value="" data-mini="true" />
+				<label for="teamType3">팀명:</label>
+				<input type="text" name="teamType3" id="teamType3" value="" data-mini="true"/>
+				<label for="personName3" >성명:</label>
+				<input type="text" name="personName3" id="personName3" value="" data-mini="true"  />
+			</div>
+			<div class="ui-body">
+				<fieldset class="ui-grid-b">
+					<div class="ui-block-a">
+                 	<input type="reset" id="cancel3" value="취소"/>
+					</div>
+					<div class="ui-block-b">
+                    <input type="button" id="submit3" value="삭제"/>
+					</div>
+					<div class="ui-block-c">
+                    <input type="button" id="search3" value="검색"/>
+					</div>
+				</fieldset>
+			</div>
+		</form>
+	</div>
+	<div data-role="footer" data-position="fixed" data-theme='b'>
+		<h4>HYCU 정보통신 프로젝트</h4>
+    </div>
+  </div>
+
+<!-- 전체 모임 인원 정보 조회 화면 -->
+  <div data-role="page" id="page4">
+	<div data-role="header" data-position="fixed">
+		<a href="#" data-icon="back" data-rel="back" data-direction="reverse">Back</a>
+		<h1>모임 인원 정보</h1>
+		<a href="#page0" data-icon="home" data-iconpos="notext">Home</a>
+		<div data-role="navbar">
+			<ul>
+				<li><a href="#page1">입력</a></li>
+				<li><a href="#page2">수정</a></li>
+				<li><a href="#page3">삭제</a></li>
+				<li><a href="#page4">전체검색</a></li>
+			</ul>
+		</div>
+	</div>
+	<div data-role="content">
+		<h3>모임 인원 정보 검색</h3>
+		<div class="ui-body ui-body-b gap">
+			<fieldset data-role="controlgroup" data-type="horizontal" style="text-align:right">
+            	<input type="button" id="first" value="|<"/>
+                <input type="button" id="prev" value="<"/>
+                <input type="button" id="next" value=">"/>
+                <input type="button" id="last" value=">|"/>
+            </fieldset>
+			<label for="sPersonName4">인원 검색:</label>
+			<input type="search" name="sPersonName4" id="sPersonName4" value="" data-mini="true" />
+			<label for="teamType4">장르:</label>
+			<input type="text" name="teamType4" id="teamType4" value="" data-mini="true"/>
+			<label for="personName4">성명:</label>
+			<input type="text" name="personName4" id="personName4" value="" data-mini="true"/>
+        </div>
+		<div class="ui-body">
+			<fieldset class="ui-grid-a">
+				<div class="ui-block-a">
+			       <input type="reset" id="cancel4" value="취소"/>
+				</div>
+				<div class="ui-block-b">
+			       <input type="button" id="search4" value="검색"/>
+				</div>
+			</fieldset>
+		</div>
+	</div>
+	<div data-role="footer" data-position="fixed" data-theme='b'>
+		<h4>HYCU 정보통신 프로젝트</h4>
+    </div>
+  </div>
+</body>
+</html>
